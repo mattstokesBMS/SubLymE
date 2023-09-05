@@ -1,5 +1,5 @@
 #Subtypes of Large B-Cell Lymphoma Expression (SubLymE)
-#Copyright 2023, Bristol Myers Squibb
+#Avilable under GPLv2 (https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 
 #Input
 #exprs - a matrix of gene expression values (M features x N samples), log2 scaled and standardized on a gene-wise basis
