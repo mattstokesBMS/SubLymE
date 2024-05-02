@@ -11,7 +11,6 @@
 #SubLymE_scores - an Nx7 matrix of class scores per sample, the maximum of which is selected as the class label
 
 
-
 #Apply SubLymE classifier to log2-scaled, standardized expression data (features x samples)
 SubLymE_classifier = function(exprs, path = "")
 {
@@ -19,7 +18,16 @@ SubLymE_classifier = function(exprs, path = "")
   coef = read.table(file = paste0(path,"SubLymE_coefficients.txt"))
   classScores = array(NA, c(ncol(exprs),7))
   classLabels = rep(NA, ncol(exprs))
-
+  
+  #Check for all features, stop if any are missing
+  missingGenes = rownames(coef)[-1][-which(rownames(coef)[-1] %in% rownames(exprs))]
+  if (length(missingGenes)>0)
+      stop("Missing ", length(missingGenes)," of ",(nrow(coef)-1)," gene(s): ", c(rbind(missingGenes, ", ")))
+  
+  #Check that data is standardized (all features should have mean=0, sd=1, within numerical error)
+  if (any(abs(apply(exprs,1,mean)) > 0.001) | any(abs(apply(exprs,1,sd)-1) > 0.001))
+      warning("Data is not feature-wise standardized!")
+  
   #Subset expression data to model features and compute class scores as a weighted sum of expression
   exprs = rbind("Intercept" = 1,exprs[rownames(coef)[-1],])
   for (i in c(1:7))
@@ -32,5 +40,4 @@ SubLymE_classifier = function(exprs, path = "")
   
   return(list("SubLymE_class" = classLabels, "SubLymE_scores" = classScores))
 }
-
 
